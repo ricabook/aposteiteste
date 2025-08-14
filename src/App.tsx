@@ -30,6 +30,8 @@ import MyMoney from "./pages/MyMoney";
 import MyPolls from "./pages/MyPolls";
 import MetaMaskDemo from "./pages/MetaMaskDemo";
 import Layout from "./components/Layout";
+import AdminMensagens from "./pages/AdminMensagens";
+import Suporte from "./pages/Suporte";
 import Sitemap from "./components/Sitemap";
 
 const queryClient = new QueryClient();
@@ -106,6 +108,11 @@ const AppContent = () => {
             <MyPolls />
           </ProtectedRoute>
         } />
+        <Route path="/suporte" element={
+          <ProtectedRoute>
+            <Suporte />
+          </ProtectedRoute>
+        } />
         <Route path="/admin" element={
           <ProtectedRoute>
             <AdminDashboard />
@@ -124,6 +131,11 @@ const AppContent = () => {
         <Route path="/admin/users" element={
           <ProtectedRoute>
             <AdminUsers />
+          </ProtectedRoute>
+        } />
+        <Route path="/admin/mensagens" element={
+          <ProtectedRoute>
+            <AdminMensagens />
           </ProtectedRoute>
         } />
         <Route path="/admin/banners" element={
