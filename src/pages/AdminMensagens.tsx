@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAdminCheck } from '@/hooks/useAdminCheck';
@@ -35,16 +35,6 @@ interface AuthorInfo {
   email: string | null;
 }
 
-function pickName(obj: any): string | null {
-  return (
-    obj?.full_name ||
-    obj?.name ||
-    obj?.display_name ||
-    obj?.username ||
-    null
-  );
-}
-
 export default function AdminMensagens() {
   const { isAdmin, isLoading } = useAdminCheck();
   const qc = useQueryClient();
@@ -79,25 +69,31 @@ export default function AdminMensagens() {
     enabled: isAdmin && !isLoading && !!selected?.id,
   });
 
-  // Fetch author info directly from `profiles` table by user_id
-  const { data: author } = useQuery({
-    queryKey: ['ticket_author_profiles', selected?.user_id],
-    queryFn: async () => {
-      if (!selected?.user_id) return null;
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id, email, full_name, name, display_name, username')
-        .eq('id', selected.user_id)
-        .maybeSingle();
-      if (error) throw error;
-      if (!data) return { name: null, email: null } as AuthorInfo;
-      return {
-        name: pickName(data),
-        email: (data as any)?.email ?? null,
-      } as AuthorInfo;
-    },
-    enabled: !!selected?.user_id && isAdmin && !isLoading,
-  });
+  // Load author via secure RPC (server-side, SECURITY DEFINER)
+  const [author, setAuthor] = useState<AuthorInfo | null>(null);
+  useEffect(() => {
+    const load = async () => {
+      if (!isAdmin || !selected?.user_id) {
+        setAuthor(null);
+        return;
+      }
+      const { data, error } = await supabase.rpc('admin_get_user_identity', {
+        uid: selected.user_id,
+      });
+      if (error) {
+        console.error('Erro ao buscar autor:', error);
+        setAuthor({ name: null, email: null });
+        return;
+      }
+      // data is array of rows when returns setof/table; we expect single row
+      const row = Array.isArray(data) ? data[0] : data;
+      setAuthor({
+        name: (row && (row.full_name || row.name)) ?? null,
+        email: (row && row.email) ?? null,
+      });
+    };
+    load();
+  }, [isAdmin, selected?.user_id]);
 
   const deleteTicket = useMutation({
     mutationFn: async (ticketId: string) => {
