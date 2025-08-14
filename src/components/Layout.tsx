@@ -178,15 +178,6 @@ const Layout = ({ children, onSearch }: LayoutProps) => {
                        >
                          Wallet
                        </Link>
-                                  <Link
-                                    to="/admin/messages"
-                                    onClick={() => setIsMobileMenuOpen(false)}
-                                    className={`flex items-center space-x-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${isActive('/admin/messages') ? 'bg-primary text-primary-foreground' : 'text-foreground hover:bg-muted'}`}
-                                  >
-                                    <MessageSquare className="h-5 w-5" />
-                                    <span>Mensagens</span>
-                                  </Link>
-
                         <Link 
                           to="/admin/banners" 
                           className={`text-sm font-medium transition-colors hover:text-primary ${
@@ -514,8 +505,11 @@ const Layout = ({ children, onSearch }: LayoutProps) => {
                         </DropdownMenuItem>
                          
                         <DropdownMenuItem asChild>
-                          
-                        </DropdownMenuItem>
+  <Link to="/support" className="flex items-center">
+    <MessageSquare className="mr-2 h-4 w-4" />
+    <span>Suporte</span>
+  </Link>
+</DropdownMenuItem>
 {isAdmin && (
                            <>
                              <DropdownMenuSeparator />
@@ -532,8 +526,11 @@ const Layout = ({ children, onSearch }: LayoutProps) => {
                                </Link>
                              </DropdownMenuItem>
                              <DropdownMenuItem asChild>
-                               
-                             </DropdownMenuItem>
+  <Link to="/admin/messages" className="flex items-center">
+    <MessageSquare className="mr-2 h-4 w-4" />
+    <span>Mensagens</span>
+  </Link>
+</DropdownMenuItem>
 
                            </>
                          )}
