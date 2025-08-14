@@ -90,6 +90,7 @@ const MyPolls = () => {
       const slug = await makeUniqueSlug(formData.title, supabase);
       const pollData = {
         ...formData,
+        slug: slug,
         options: optionsArray,
         option_images: optionImagesArray.length > 0 ? optionImagesArray : null,
         option_a: optionsArray[0]?.label || '',
