@@ -488,7 +488,6 @@ const AdminPolls = () => {
 
       const pollData = {
         title: formData.title,
-          slug: slug,
         description: formData.description,
         question: formData.question,
         end_date: formData.end_date.toISOString(),
@@ -506,7 +505,6 @@ const AdminPolls = () => {
         // Update existing poll with creator selection
         const updateData = {
           title: formData.title,
-          slug: slug,
           description: formData.description,
           question: formData.question,
           end_date: formData.end_date.toISOString(),
