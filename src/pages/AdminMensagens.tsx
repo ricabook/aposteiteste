@@ -35,6 +35,16 @@ interface AuthorInfo {
   email: string | null;
 }
 
+function pickName(obj: any): string | null {
+  return (
+    obj?.full_name ||
+    obj?.name ||
+    obj?.display_name ||
+    obj?.username ||
+    null
+  );
+}
+
 export default function AdminMensagens() {
   const { isAdmin, isLoading } = useAdminCheck();
   const qc = useQueryClient();
@@ -69,44 +79,22 @@ export default function AdminMensagens() {
     enabled: isAdmin && !isLoading && !!selected?.id,
   });
 
-  // Fetch author info (name + email) with a robust fallback strategy.
+  // Fetch author info directly from `profiles` table by user_id
   const { data: author } = useQuery({
-    queryKey: ['ticket_author', selected?.user_id],
+    queryKey: ['ticket_author_profiles', selected?.user_id],
     queryFn: async () => {
       if (!selected?.user_id) return null;
-      // Try to read from auth.users (requires proper policies/permissions)
-      try {
-        // Supabase JS v2: use .schema('auth') to access auth.users
-        const { data, error } = await supabase
-          .schema('auth')
-          .from('users')
-          .select('id, email, raw_user_meta_data')
-          .eq('id', selected.user_id)
-          .maybeSingle();
-        if (!error && data) {
-          const name =
-            (data as any)?.raw_user_meta_data?.full_name ||
-            (data as any)?.raw_user_meta_data?.name ||
-            null;
-          return { name, email: (data as any)?.email } as AuthorInfo;
-        }
-      } catch (e) {
-        // ignore and try fallback
-      }
-      // Fallback: try a public profiles table pattern
-      try {
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('id, email, full_name')
-          .eq('id', selected.user_id)
-          .maybeSingle();
-        if (!error && data) {
-          return { name: (data as any)?.full_name || null, email: (data as any)?.email || null } as AuthorInfo;
-        }
-      } catch (e) {
-        // ignore
-      }
-      return { name: null, email: null } as AuthorInfo;
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, email, full_name, name, display_name, username')
+        .eq('id', selected.user_id)
+        .maybeSingle();
+      if (error) throw error;
+      if (!data) return { name: null, email: null } as AuthorInfo;
+      return {
+        name: pickName(data),
+        email: (data as any)?.email ?? null,
+      } as AuthorInfo;
     },
     enabled: !!selected?.user_id && isAdmin && !isLoading,
   });
