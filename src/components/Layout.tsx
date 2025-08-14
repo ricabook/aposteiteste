@@ -1,5 +1,4 @@
 import { ReactNode, useState } from 'react';
-import { MessageSquare } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -120,13 +119,6 @@ const Layout = ({ children, onSearch }: LayoutProps) => {
                   >
                     Meu dinheiro
                   </Link>
-<Link 
-  to="/suporte" 
-  className={`text-sm font-medium transition-colors hover:text-primary ${isActive('/suporte') ? 'text-primary' : 'text-muted-foreground'}`}
->
-  Suporte
-</Link>
-
                    {!isAdmin && (
                      <Link 
                        to="/my-polls" 
@@ -165,15 +157,6 @@ const Layout = ({ children, onSearch }: LayoutProps) => {
                        >
                          Usuários
                        </Link>
-<Link 
-  to="/admin/mensagens" 
-  className={`text-sm font-medium transition-colors hover:text-primary ${
-    isActive('/admin/mensagens') ? 'text-primary' : 'text-muted-foreground'
-  }`}
->
-  Mensagens
-</Link>
-
                        <Link 
                          to="/admin/wallet" 
                          className={`text-sm font-medium transition-colors hover:text-primary ${

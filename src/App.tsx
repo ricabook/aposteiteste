@@ -31,8 +31,6 @@ import MyPolls from "./pages/MyPolls";
 import MetaMaskDemo from "./pages/MetaMaskDemo";
 import Layout from "./components/Layout";
 import Sitemap from "./components/Sitemap";
-import Support from "./pages/Support";
-import AdminMessages from "./pages/AdminMessages";
 
 const queryClient = new QueryClient();
 
@@ -106,11 +104,6 @@ const AppContent = () => {
         <Route path="/my-polls" element={
           <ProtectedRoute>
             <MyPolls />
-        <Route path="/suporte" element={
-          <ProtectedRoute>
-            <Support />
-          </ProtectedRoute>
-        } />
           </ProtectedRoute>
         } />
         <Route path="/admin" element={
@@ -141,11 +134,6 @@ const AppContent = () => {
         <Route path="/admin/withdrawals" element={
           <ProtectedRoute>
             <AdminWithdrawals />
-        <Route path="/admin/mensagens" element={
-          <ProtectedRoute>
-            <AdminMessages />
-          </ProtectedRoute>
-        } />
           </ProtectedRoute>
         } />
         <Route path="/my-withdrawals" element={
