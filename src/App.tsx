@@ -167,3 +167,13 @@ const App = () => (
 );
 
 export default App;
+
+import Support from '@/pages/Support';
+import AdminMessages from '@/pages/AdminMessages';
+
+<Routes>
+  {/* ...suas rotas existentes... */}
+  <Route path="/support" element={<Support />} />
+  <Route path="/admin/messages" element={<AdminMessages />} />
+</Routes>
+
