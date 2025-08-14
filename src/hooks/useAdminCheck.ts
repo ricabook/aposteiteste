@@ -27,7 +27,7 @@ export function useAdminCheck() {
       }
     }
     run();
-    return () => { cancelled = True as unknown as boolean; };
+    return () => { cancelled = true as unknown as boolean; };
   }, [user?.id]);
 
   return { isAdmin };
