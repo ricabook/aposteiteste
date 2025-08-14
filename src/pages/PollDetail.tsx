@@ -66,16 +66,19 @@ const PollDetail = () => {
     retryDelay: 1000,
   });
 
+  const pollId = (poll as any)?.id;
+
+
   // Fetch market data
   const { data: marketData, isLoading: marketLoading } = useQuery({
-    queryKey: ['marketData', id],
+    queryKey: ['marketData', pollId],
     queryFn: async () => {
-      if (!id || !poll) throw new Error('Poll ID or poll data is required');
+      if (!pollId || !poll) throw new Error('Poll ID or poll data is required');
       
       try {
         // Use the new secure function to get poll volume data
         const { data: volumeData, error: volumeError } = await supabase
-          .rpc('get_poll_volume_data', { poll_id_param: id });
+          .rpc('get_poll_volume_data', { poll_id_param: pollId });
 
         if (volumeError) {
           console.error('Error fetching volume data:', volumeError);
@@ -201,7 +204,7 @@ const PollDetail = () => {
         };
       }
     },
-    enabled: !!id && !!poll,
+    enabled: !!pollId && !!poll,
     staleTime: 10 * 1000, // Cache for 10 seconds
     gcTime: 30 * 1000, // Keep in cache for 30 seconds
     refetchInterval: 5000, // Refetch every 5 seconds for real-time updates
@@ -211,9 +214,9 @@ const PollDetail = () => {
 
   // Fetch comments
   const { data: comments = [], refetch: refetchComments, isLoading: commentsLoading } = useQuery({
-    queryKey: ['pollComments', id],
+    queryKey: ['pollComments', pollId],
     queryFn: async () => {
-      if (!id) return [];
+      if (!pollId) return [];
 
       const { data, error } = await supabase
         .from('poll_comments')
@@ -223,7 +226,7 @@ const PollDetail = () => {
           created_at,
           profiles!inner(display_name, avatar_url)
         `)
-        .eq('poll_id', id)
+        .eq('poll_id', pollId)
         .order('created_at', { ascending: false })
         .limit(50);
 
@@ -242,12 +245,12 @@ const PollDetail = () => {
   // Add comment mutation
   const addCommentMutation = useMutation({
     mutationFn: async (content: string) => {
-      if (!user?.id || !id) throw new Error('User not authenticated or poll not found');
+      if (!user?.id || !pollId) throw new Error('User not authenticated or poll not found');
 
       const { error } = await supabase
         .from('poll_comments')
         .insert({
-          poll_id: id,
+          poll_id: pollId,
           user_id: user.id,
           content,
           status: isAdmin ? 'approved' : 'pending'
@@ -493,8 +496,8 @@ const PollDetail = () => {
               )}
 
               {/* My Bets Card */}
-              {id && poll && (
-                <MyBetsCard pollId={id} poll={poll} />
+              {pollId && poll && (
+                <MyBetsCard pollId={pollId} poll={poll} />
               )}
 
               {/* Comments Section */}
@@ -678,8 +681,8 @@ const PollDetail = () => {
               )}
 
               {/* My Bets Card */}
-              {id && poll && (
-                <MyBetsCard pollId={id} poll={poll} />
+              {pollId && poll && (
+                <MyBetsCard pollId={pollId} poll={poll} />
               )}
 
               {/* Comments Section */}
