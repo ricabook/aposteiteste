@@ -123,99 +123,72 @@ const Layout = ({ children, onSearch }: LayoutProps) => {
                           <span>Suporte</span>
                         </Link>
 
-                   
-{!isAdmin && (
+                   {!isAdmin && (
   <>
-    <Link 
-      to="/" 
-      className={`text-sm font-medium transition-colors hover:text-primary ${isActive('/') ? 'text-primary' : 'text-muted-foreground'}`}
-    >
-      Mercados
-    </Link>
-    <Link 
-      to="/portfolio" 
-      className={`text-sm font-medium transition-colors hover:text-primary ${isActive('/portfolio') ? 'text-primary' : 'text-muted-foreground'}`}
-    >
-      Minhas apostas
-    </Link>
-    <Link 
-      to="/my-money" 
-      className={`text-sm font-medium transition-colors hover:text-primary ${isActive('/my-money') ? 'text-primary' : 'text-muted-foreground'}`}
-    >
-      Meu dinheiro
-    </Link>
     <Link 
       to="/my-polls" 
       className={`text-sm font-medium transition-colors hover:text-primary ${isActive('/my-polls') ? 'text-primary' : 'text-muted-foreground'}`}
     >
       Minhas Enquetes
     </Link>
-</>
-)}
-
-                   {!isAdmin && (
-)}
-
-                  
-{isAdmin && (
-  <>
     <Link 
-      to="/" 
-      className={`text-sm font-medium transition-colors hover:text-primary ${isActive('/') ? 'text-primary' : 'text-muted-foreground'}`}
+      to="/support" 
+      className={`text-sm font-medium transition-colors hover:text-primary ${isActive('/support') ? 'text-primary' : 'text-muted-foreground'}`}
     >
-      Mercados
-    </Link>
-    <Link 
-      to="/portfolio" 
-      className={`text-sm font-medium transition-colors hover:text-primary ${isActive('/portfolio') ? 'text-primary' : 'text-muted-foreground'}`}
-    >
-      Minhas apostas
-    </Link>
-    <Link 
-      to="/my-money" 
-      className={`text-sm font-medium transition-colors hover:text-primary ${isActive('/my-money') ? 'text-primary' : 'text-muted-foreground'}`}
-    >
-      Meu dinheiro
-    </Link>
-    <Link 
-      to="/admin" 
-      className={`text-sm font-medium transition-colors hover:text-primary ${isActive('/admin') || location.pathname.startsWith('/admin') ? 'text-primary' : 'text-muted-foreground'}`}
-    >
-      Admin
-    </Link>
-    <Link 
-      to="/admin/polls" 
-      className={`text-sm font-medium transition-colors hover:text-primary ${isActive('/admin/polls') ? 'text-primary' : 'text-muted-foreground'}`}
-    >
-      Enquetes
-    </Link>
-    <Link 
-      to="/admin/users" 
-      className={`text-sm font-medium transition-colors hover:text-primary ${isActive('/admin/users') ? 'text-primary' : 'text-muted-foreground'}`}
-    >
-      Usuários
-    </Link>
-    <Link 
-      to="/admin/wallet" 
-      className={`text-sm font-medium transition-colors hover:text-primary ${isActive('/admin/wallet') ? 'text-primary' : 'text-muted-foreground'}`}
-    >
-      Wallet
-    </Link>
-    <Link 
-      to="/admin/banners" 
-      className={`text-sm font-medium transition-colors hover:text-primary ${isActive('/admin/banners') ? 'text-primary' : 'text-muted-foreground'}`}
-    >
-      Banners
-    </Link>
-    <Link 
-      to="/admin/withdrawals" 
-      className={`text-sm font-medium transition-colors hover:text-primary ${isActive('/admin/withdrawals') ? 'text-primary' : 'text-muted-foreground'}`}
-    >
-      Saques
+      Suporte
     </Link>
   </>
 )}
 
+                   {!isAdmin && (
+                     <Link 
+                       to="/support" 
+                       className={`text-sm font-medium transition-colors hover:text-primary ${isActive('/support') ? 'text-primary' : 'text-muted-foreground'}`}
+                     >
+                       Suporte
+                     </Link>
+                   )}
+
+                  {isAdmin && (
+  <>
+<Link 
+  to="/admin" 
+  className={`text-sm font-medium transition-colors hover:text-primary ${isActive('/admin') || location.pathname.startsWith('/admin') ? 'text-primary' : 'text-muted-foreground'}`}
+>
+  Admin
+</Link>
+<Link 
+  to="/admin/polls" 
+  className={`text-sm font-medium transition-colors hover:text-primary ${isActive('/admin/polls') ? 'text-primary' : 'text-muted-foreground'}`}
+>
+  Enquetes
+</Link>
+<Link 
+  to="/admin/users" 
+  className={`text-sm font-medium transition-colors hover:text-primary ${isActive('/admin/users') ? 'text-primary' : 'text-muted-foreground'}`}
+>
+  Usuários
+</Link>
+<Link 
+  to="/admin/wallet" 
+  className={`text-sm font-medium transition-colors hover:text-primary ${isActive('/admin/wallet') ? 'text-primary' : 'text-muted-foreground'}`}
+>
+  Wallet
+</Link>
+<Link 
+  to="/admin/banners" 
+  className={`text-sm font-medium transition-colors hover:text-primary ${isActive('/admin/banners') ? 'text-primary' : 'text-muted-foreground'}`}
+>
+  Banners
+</Link>
+<Link 
+  to="/admin/withdrawals" 
+  className={`text-sm font-medium transition-colors hover:text-primary ${isActive('/admin/withdrawals') ? 'text-primary' : 'text-muted-foreground'}`}
+>
+  Saques
+</Link>
+  </>
+)}
                 </>
               )}
             </div>
