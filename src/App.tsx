@@ -176,4 +176,3 @@ import AdminMessages from '@/pages/AdminMessages';
   <Route path="/support" element={<Support />} />
   <Route path="/admin/messages" element={<AdminMessages />} />
 </Routes>
-
