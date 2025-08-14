@@ -1,0 +1,73 @@
+import { useEffect } from 'react';
+
+const Sitemap = () => {
+  useEffect(() => {
+    const sitemapContent = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://apostei.org/</loc>
+    <lastmod>2025-01-13</lastmod>
+    <priority>1.0</priority>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://apostei.org/faq</loc>
+    <lastmod>2025-01-13</lastmod>
+    <priority>0.8</priority>
+    <changefreq>weekly</changefreq>
+  </url>
+  <url>
+    <loc>https://apostei.org/privacidade</loc>
+    <lastmod>2025-01-13</lastmod>
+    <priority>0.6</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://apostei.org/termos-de-uso</loc>
+    <lastmod>2025-01-13</lastmod>
+    <priority>0.6</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://apostei.org/seguranca</loc>
+    <lastmod>2025-01-13</lastmod>
+    <priority>0.7</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://apostei.org/meios-de-pagamento</loc>
+    <lastmod>2025-01-13</lastmod>
+    <priority>0.8</priority>
+    <changefreq>weekly</changefreq>
+  </url>
+  <url>
+    <loc>https://apostei.org/auth</loc>
+    <lastmod>2025-01-13</lastmod>
+    <priority>0.5</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+</urlset>`;
+
+    // Set the response headers for XML
+    document.querySelector('html')?.setAttribute('data-content-type', 'application/xml');
+    
+    // Replace the entire document content with XML
+    const newDocument = document.implementation.createDocument(null, null);
+    newDocument.appendChild(newDocument.createProcessingInstruction('xml', 'version="1.0" encoding="UTF-8"'));
+    
+    const response = new Response(sitemapContent, {
+      headers: {
+        'Content-Type': 'application/xml',
+      },
+    });
+    
+    // For immediate display
+    document.open();
+    document.write(sitemapContent);
+    document.close();
+  }, []);
+
+  return null;
+};
+
+export default Sitemap;

@@ -1,0 +1,10 @@
+project_id = "yhoaujtxtiodbhenpmxa"
+
+[functions.cancel-poll]
+verify_jwt = false
+
+[functions.create-deposit]
+verify_jwt = true
+
+[functions.verify-deposit]
+verify_jwt = true
