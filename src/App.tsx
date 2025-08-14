@@ -32,11 +32,15 @@ import MetaMaskDemo from "./pages/MetaMaskDemo";
 import Layout from "./components/Layout";
 import Sitemap from "./components/Sitemap";
 
+// NEW PAGES
+import Support from "./pages/Support";
+import AdminMessages from "./pages/AdminMessages";
+
 const queryClient = new QueryClient();
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
-  
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -44,11 +48,11 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
       </div>
     );
   }
-  
+
   if (!user) {
     return <Navigate to="/auth" replace />;
   }
-  
+
   return <>{children}</>;
 };
 
@@ -56,7 +60,7 @@ const AppContent = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const location = useLocation();
   const { user, loading } = useAuth();
-  
+
   // Show loading while checking auth
   if (loading) {
     return (
@@ -65,12 +69,12 @@ const AppContent = () => {
       </div>
     );
   }
-  
+
   // If user is logged in and on auth page, redirect to home
   if (user && location.pathname === '/auth') {
     return <Navigate to="/" replace />;
   }
-  
+
   return (
     <Layout onSearch={location.pathname === '/' ? setSearchQuery : undefined}>
       <Routes>
@@ -84,7 +88,7 @@ const AppContent = () => {
         <Route path="/enquete/:slug" element={<PollDetail />} />
         <Route path="/poll/:id" element={<OldPollRedirect />} />
         <Route path="/sitemap.xml" element={<Sitemap />} />
-        
+
         {/* Protected routes that require authentication */}
         <Route path="/settings" element={
           <ProtectedRoute>
@@ -106,6 +110,19 @@ const AppContent = () => {
             <MyPolls />
           </ProtectedRoute>
         } />
+
+        {/* NEW ROUTES */}
+        <Route path="/support" element={
+          <ProtectedRoute>
+            <Support />
+          </ProtectedRoute>
+        } />
+        <Route path="/admin/messages" element={
+          <ProtectedRoute>
+            <AdminMessages />
+          </ProtectedRoute>
+        } />
+
         <Route path="/admin" element={
           <ProtectedRoute>
             <AdminDashboard />
@@ -146,6 +163,7 @@ const AppContent = () => {
             <MetaMaskDemo />
           </ProtectedRoute>
         } />
+
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Layout>
@@ -167,12 +185,3 @@ const App = () => (
 );
 
 export default App;
-
-import Support from '@/pages/Support';
-import AdminMessages from '@/pages/AdminMessages';
-
-<Routes>
-  {/* ...suas rotas existentes... */}
-  <Route path="/support" element={<Support />} />
-  <Route path="/admin/messages" element={<AdminMessages />} />
-</Routes>
