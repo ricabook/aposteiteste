@@ -3,8 +3,8 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import {
 import NotificationsBell from '@/components/NotificationsBell';
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
