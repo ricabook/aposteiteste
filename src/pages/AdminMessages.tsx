@@ -25,7 +25,6 @@ export default function AdminMessages() {
   const [reply, setReply] = useState('');
   const [usersMap, setUsersMap] = useState<Record<string, string>>({});
 
-  // Load display names for tickets' users
   useEffect(() => {
     const ids = Array.from(new Set(tickets.map(t => t.user_id)));
     if (ids.length === 0) return;

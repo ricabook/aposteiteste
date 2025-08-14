@@ -30,7 +30,6 @@ export function useTicketMessages(ticketId?: string) {
     },
   });
 
-  // Realtime for this ticket
   useEffect(() => {
     if (!ticketId) return;
     const channel = supabase.channel(`ticket-messages-${ticketId}`)

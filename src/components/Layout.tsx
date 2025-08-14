@@ -133,6 +133,15 @@ const Layout = ({ children, onSearch }: LayoutProps) => {
                        Minhas Enquetes
                      </Link>
                    )}
+                   {!isAdmin && (
+                     <Link 
+                       to="/support" 
+                       className={`text-sm font-medium transition-colors hover:text-primary ${isActive('/support') ? 'text-primary' : 'text-muted-foreground'}`}
+                     >
+                       Suporte
+                     </Link>
+                   )}
+
                   {isAdmin && (
                     <>
                       <Link 
@@ -505,10 +514,7 @@ const Layout = ({ children, onSearch }: LayoutProps) => {
                         </DropdownMenuItem>
                          
                         <DropdownMenuItem asChild>
-                          <Link to="/support" className="flex items-center">
-                            <MessageSquare className="mr-2 h-4 w-4" />
-                            <span>Suporte</span>
-                          </Link>
+                          
                         </DropdownMenuItem>
 {isAdmin && (
                            <>
@@ -526,10 +532,7 @@ const Layout = ({ children, onSearch }: LayoutProps) => {
                                </Link>
                              </DropdownMenuItem>
                              <DropdownMenuItem asChild>
-                               <Link to="/admin/messages" className="flex items-center">
-                                 <MessageSquare className="mr-2 h-4 w-4" />
-                                 <span>Mensagens</span>
-                               </Link>
+                               
                              </DropdownMenuItem>
 
                            </>

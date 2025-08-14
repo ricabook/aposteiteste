@@ -42,7 +42,6 @@ export function useTickets(isAdmin = false) {
     },
   });
 
-  // Realtime: listen to tickets changes
   useEffect(() => {
     const channel = supabase.channel(`tickets-${isAdmin ? 'admin' : user?.id ?? 'anon'}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'tickets' }, () => {
@@ -58,14 +57,12 @@ export function useTickets(isAdmin = false) {
       if (!payload.titulo?.trim() || !payload.assunto?.trim()) {
         throw new Error('Título e assunto são obrigatórios');
       }
-      // 1) create ticket
       const { data: created, error } = await supabase
         .from('tickets')
         .insert({ titulo: payload.titulo.trim(), assunto: payload.assunto.trim(), user_id: user.id })
         .select('id')
         .single();
       if (error) throw error;
-      // 2) first message (from user) for history visibility
       await supabase.from('ticket_messages').insert({
         ticket_id: created.id,
         autor_role: 'user',
