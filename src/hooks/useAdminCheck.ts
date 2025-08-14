@@ -1,34 +1,43 @@
-
-import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { useEffect, useState } from 'react';
 
-/**
- * Tries to determine if current user is admin.
- * Prefers RPC 'has_role', falls back to false if unavailable.
- */
 export function useAdminCheck() {
-  const { user } = useAuth();
-  const [isAdmin, setIsAdmin] = useState(false);
+  const { user, loading: authLoading } = useAuth();
 
-  useEffect(() => {
-    let cancelled = false;
-    async function run() {
-      if (!user) { setIsAdmin(false); return; }
-      try {
-        // Attempt RPC if exists
-        const { data, error } = await supabase.rpc('has_role', { user_id: user.id, role: 'admin' });
-        if (!cancelled) {
-          if (error) setIsAdmin(false);
-          else setIsAdmin(!!data);
-        }
-      } catch {
-        if (!cancelled) setIsAdmin(false);
+  const { data: userRoles, isLoading: rolesLoading } = useQuery({
+    queryKey: ['userRoles', user?.id],
+    queryFn: async () => {
+      if (!user?.id) {
+        return [];
       }
-    }
-    run();
-    return () => { cancelled = true as unknown as boolean; };
-  }, [user?.id]);
+      
+      const { data, error } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', user.id);
+      
+      if (error) {
+        console.error('Error fetching user roles:', error);
+        return [];
+      }
+      
+      return data || [];
+    },
+    enabled: !!user?.id && !authLoading,
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+  });
 
-  return { isAdmin };
+  // Determine admin status based on database roles only
+  const hasAdminRole = Array.isArray(userRoles) && userRoles.some(role => role.role === 'admin');
+  
+  // Only use database roles for admin access
+  const isAdmin = hasAdminRole;
+
+  return {
+    isAdmin,
+    isLoading: rolesLoading || authLoading,
+    userRoles
+  };
 }
