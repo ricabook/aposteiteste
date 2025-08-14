@@ -28,7 +28,7 @@ interface PollOption {
 }
 
 const PollDetail = () => {
-  const { id } = useParams<{ id: string }>();
+  const { slug } = useParams<{ slug: string }>();
   const { user } = useAuth();
   const { isAdmin } = useAdminCheck();
   const isMobile = useIsMobile();
@@ -46,9 +46,9 @@ const PollDetail = () => {
 
   // Fetch poll details
   const { data: poll, isLoading: pollLoading, error: pollError } = useQuery({
-    queryKey: ['poll', id],
+    queryKey: ['poll', slug],
     queryFn: async () => {
-      if (!id) throw new Error('Poll ID is required');
+      if (!slug) throw new Error('Poll slug is required');
       
       const { data, error } = await supabase
         .from('polls')
@@ -59,7 +59,7 @@ const PollDetail = () => {
       if (error) throw error;
       return data;
     },
-    enabled: !!id,
+    enabled: !!slug,
     staleTime: 2 * 60 * 1000,
     gcTime: 5 * 60 * 1000,
     retry: 1,
@@ -233,7 +233,7 @@ const PollDetail = () => {
       }
       return data || [];
     },
-    enabled: !!id,
+    enabled: !!slug,
     staleTime: 60 * 1000,
     gcTime: 5 * 60 * 1000,
     retry: 1,
