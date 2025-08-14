@@ -3,7 +3,6 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import NotificationsBell from '@/components/NotificationsBell';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,6 +24,7 @@ import Logo from '@/components/Logo';
 import SearchBar from '@/components/SearchBar';
 import Footer from '@/components/Footer';
 import { User, Settings, LogOut, Wallet, BarChart3, Shield, Menu, X, Banknote, Users } from 'lucide-react';
+import { MessageSquare } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
 interface LayoutProps {
@@ -114,6 +114,15 @@ const Layout = ({ children, onSearch }: LayoutProps) => {
                   >
                     Meu dinheiro
                   </Link>
+                        <Link
+                          to="/support"
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className={`flex items-center space-x-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${isActive('/support') ? 'bg-primary text-primary-foreground' : 'text-foreground hover:bg-muted'}`}
+                        >
+                          <MessageSquare className="h-5 w-5" />
+                          <span>Suporte</span>
+                        </Link>
+
                    {!isAdmin && (
                      <Link 
                        to="/my-polls" 
@@ -160,6 +169,15 @@ const Layout = ({ children, onSearch }: LayoutProps) => {
                        >
                          Wallet
                        </Link>
+                                  <Link
+                                    to="/admin/messages"
+                                    onClick={() => setIsMobileMenuOpen(false)}
+                                    className={`flex items-center space-x-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${isActive('/admin/messages') ? 'bg-primary text-primary-foreground' : 'text-foreground hover:bg-muted'}`}
+                                  >
+                                    <MessageSquare className="h-5 w-5" />
+                                    <span>Mensagens</span>
+                                  </Link>
+
                         <Link 
                           to="/admin/banners" 
                           className={`text-sm font-medium transition-colors hover:text-primary ${
@@ -441,9 +459,6 @@ const Layout = ({ children, onSearch }: LayoutProps) => {
                       </Badge>
                     )}
                     
-                    <NotificationsBell />
-
-                    
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" className="relative h-9 w-9 rounded-full">
@@ -488,7 +503,14 @@ const Layout = ({ children, onSearch }: LayoutProps) => {
                             <span>Configurações</span>
                           </Link>
                         </DropdownMenuItem>
-                         {isAdmin && (
+                         
+                        <DropdownMenuItem asChild>
+                          <Link to="/support" className="flex items-center">
+                            <MessageSquare className="mr-2 h-4 w-4" />
+                            <span>Suporte</span>
+                          </Link>
+                        </DropdownMenuItem>
+{isAdmin && (
                            <>
                              <DropdownMenuSeparator />
                              <DropdownMenuItem asChild>
@@ -503,6 +525,13 @@ const Layout = ({ children, onSearch }: LayoutProps) => {
                                  <span>Wallet</span>
                                </Link>
                              </DropdownMenuItem>
+                             <DropdownMenuItem asChild>
+                               <Link to="/admin/messages" className="flex items-center">
+                                 <MessageSquare className="mr-2 h-4 w-4" />
+                                 <span>Mensagens</span>
+                               </Link>
+                             </DropdownMenuItem>
+
                            </>
                          )}
                         <DropdownMenuSeparator />
