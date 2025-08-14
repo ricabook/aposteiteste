@@ -9,6 +9,7 @@ const Footer = () => {
   };
 
   const footerLinks = [
+    { to: '/suporte', label: 'Suporte' },
     { to: '/privacidade', label: 'Privacidade' },
     { to: '/termos-de-uso', label: 'Termos de Uso' },
     { to: '/seguranca', label: 'Segurança' },
