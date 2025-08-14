@@ -114,14 +114,14 @@ const Layout = ({ children, onSearch }: LayoutProps) => {
                   >
                     Meu dinheiro
                   </Link>
-                        <Link
-                          to="/support"
-                          onClick={() => setIsMobileMenuOpen(false)}
-                          className={`flex items-center space-x-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${isActive('/support') ? 'bg-primary text-primary-foreground' : 'text-foreground hover:bg-muted'}`}
-                        >
-                          <MessageSquare className="h-5 w-5" />
-                          <span>Suporte</span>
-                        </Link>
+                        <Link 
+  to="/support" 
+  className={`text-sm font-medium transition-colors hover:text-primary ${
+    isActive('/support') ? 'text-primary' : 'text-muted-foreground'
+  }`}
+>
+  Suporte
+</Link>
 
                    {!isAdmin && (
                      <Link 
