@@ -6,7 +6,6 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Trash2, Send, CheckCircle2 } from 'lucide-react';
 import { format } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
@@ -29,6 +28,11 @@ interface Message {
   sender_role: 'admin' | 'user';
   message: string;
   created_at: string;
+}
+
+interface AuthorInfo {
+  name: string | null;
+  email: string | null;
 }
 
 export default function AdminMensagens() {
@@ -63,6 +67,48 @@ export default function AdminMensagens() {
       return data as Message[];
     },
     enabled: isAdmin && !isLoading && !!selected?.id,
+  });
+
+  // Fetch author info (name + email) with a robust fallback strategy.
+  const { data: author } = useQuery({
+    queryKey: ['ticket_author', selected?.user_id],
+    queryFn: async () => {
+      if (!selected?.user_id) return null;
+      // Try to read from auth.users (requires proper policies/permissions)
+      try {
+        // Supabase JS v2: use .schema('auth') to access auth.users
+        const { data, error } = await supabase
+          .schema('auth')
+          .from('users')
+          .select('id, email, raw_user_meta_data')
+          .eq('id', selected.user_id)
+          .maybeSingle();
+        if (!error && data) {
+          const name =
+            (data as any)?.raw_user_meta_data?.full_name ||
+            (data as any)?.raw_user_meta_data?.name ||
+            null;
+          return { name, email: (data as any)?.email } as AuthorInfo;
+        }
+      } catch (e) {
+        // ignore and try fallback
+      }
+      // Fallback: try a public profiles table pattern
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('id, email, full_name')
+          .eq('id', selected.user_id)
+          .maybeSingle();
+        if (!error && data) {
+          return { name: (data as any)?.full_name || null, email: (data as any)?.email || null } as AuthorInfo;
+        }
+      } catch (e) {
+        // ignore
+      }
+      return { name: null, email: null } as AuthorInfo;
+    },
+    enabled: !!selected?.user_id && isAdmin && !isLoading,
   });
 
   const deleteTicket = useMutation({
@@ -153,7 +199,10 @@ export default function AdminMensagens() {
                     <div className="font-medium">{selected.titulo}</div>
                     <Badge>{selected.status}</Badge>
                   </div>
-                  <div className="text-xs text-muted-foreground mb-2">Aberto em {formattedDate(selected.created_at)}</div>
+                  <div className="text-xs text-muted-foreground mb-2">
+                    Aberto em {formattedDate(selected.created_at)}<br />
+                    Autor: {author?.name || 'Nome não informado'} ({author?.email || 'email indisponível'})
+                  </div>
                   <div className="whitespace-pre-wrap">{selected.assunto}</div>
                 </div>
 
