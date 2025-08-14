@@ -1,10 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { slugifyPt, ensureUniqueSlug } from '@/lib/slug';
-  return slug;
-}
-
+import { makeUniqueSlug } from '@/utils/slug';
 import { useAuth } from '@/hooks/useAuth';
 import { Navigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -90,9 +87,8 @@ const MyPolls = () => {
         image_url: submitData?.optionImages?.[index] || null
       })).filter(img => img.image_url);
 
+      const slug = await makeUniqueSlug(formData.title, supabase);
       const pollData = {
-        
-        slug: await ensureUniqueSlug(slugifyPt(formData.title)),
         ...formData,
         options: optionsArray,
         option_images: optionImagesArray.length > 0 ? optionImagesArray : null,

@@ -157,7 +157,7 @@ const PollCard = ({ poll }: PollCardProps) => {
           {/* Title and Image Row */}
           <div className="flex items-start justify-between gap-2 md:gap-3">
             <div className="flex-1 min-w-0">
-              <Link to={`/poll/${poll.slug}`} className="block">
+              <Link to={`/enquete/${(poll as any).slug ?? poll.id}`} className="block">
                 <CardTitle className="text-sm md:text-base leading-tight group-hover:text-primary transition-colors hover:underline line-clamp-2">
                   {poll.title}
                 </CardTitle>
@@ -235,7 +235,7 @@ const PollCard = ({ poll }: PollCardProps) => {
           </div>
 
           {/* Action Button */}
-          <Link to={`/poll/${poll.slug}`} className="block">
+          <Link to={`/enquete/${(poll as any).slug ?? poll.id}`} className="block">
             <Button 
               className="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs md:text-sm"
               size="sm"

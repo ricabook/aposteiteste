@@ -307,6 +307,7 @@ export type Database = {
           description: string | null
           end_date: string
           id: string
+          slug: string
           image_url: string | null
           is_active: boolean
           is_resolved: boolean
@@ -325,6 +326,7 @@ export type Database = {
         }
         Insert: {
           approved_at?: string | null
+          slug?: string
           approved_by?: string | null
           category?: Database["public"]["Enums"]["poll_category"] | null
           created_at?: string
@@ -350,6 +352,7 @@ export type Database = {
         }
         Update: {
           approved_at?: string | null
+          slug?: string
           approved_by?: string | null
           category?: Database["public"]["Enums"]["poll_category"] | null
           created_at?: string

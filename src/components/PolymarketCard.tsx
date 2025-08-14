@@ -381,7 +381,7 @@ const PolymarketCard = ({ poll }: PolymarketCardProps) => {
             />
           )}
           <div className="flex-1 min-w-0">
-            <Link to={`/poll/${poll.slug}`}>
+            <Link to={`/enquete/${(poll as any).slug ?? poll.id}`}>
               <h3 className="text-base font-medium line-clamp-2 leading-tight group-hover:text-primary transition-colors">
                 {poll.title}
               </h3>

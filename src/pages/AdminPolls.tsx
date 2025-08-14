@@ -1,10 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { slugifyPt, ensureUniqueSlug } from '@/lib/slug';
-  return slug;
-}
-
+import { makeUniqueSlug } from '@/utils/slug';
 import { useAuth } from '@/hooks/useAuth';
 import { useAdminCheck } from '@/hooks/useAdminCheck';
 import { Navigate, Link } from 'react-router-dom';
@@ -490,9 +487,8 @@ const AdminPolls = () => {
       })).filter(img => img.image_url); // Only include options with images
 
       const pollData = {
-        
-        slug: await ensureUniqueSlug(slugifyPt(formData.title)),
         title: formData.title,
+          slug: slug,
         description: formData.description,
         question: formData.question,
         end_date: formData.end_date.toISOString(),
@@ -510,6 +506,7 @@ const AdminPolls = () => {
         // Update existing poll with creator selection
         const updateData = {
           title: formData.title,
+          slug: slug,
           description: formData.description,
           question: formData.question,
           end_date: formData.end_date.toISOString(),
@@ -535,8 +532,10 @@ const AdminPolls = () => {
         });
       } else {
         // Create new poll by admin (automatically approved)
+        const slug = await makeUniqueSlug(formData.title, supabase);
         const adminPollData = {
           title: formData.title,
+          slug: slug,
           description: formData.description,
           question: formData.question,
           end_date: formData.end_date.toISOString(),
@@ -1416,7 +1415,7 @@ const AdminPolls = () => {
                 <div className="flex-1 min-w-0">
                   <h3 className="font-semibold text-sm sm:text-base break-words mb-2">
                     <Link 
-                      to={`/poll/${poll.slug}`}
+                      to={`/poll/${poll.id}`}
                       className="hover:text-primary transition-colors underline-offset-4 hover:underline"
                     >
                       {poll.title}

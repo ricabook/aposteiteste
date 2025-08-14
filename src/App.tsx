@@ -12,7 +12,6 @@ import Auth from "./pages/Auth";
 import Settings from "./pages/Settings";
 import FAQ from "./pages/FAQ";
 import NotFound from "./pages/NotFound";
-import RedirectPollById from "./pages/RedirectPollById";
 import Privacidade from "./pages/Privacidade";
 import TermosDeUso from "./pages/TermosDeUso";
 import Seguranca from "./pages/Seguranca";
@@ -25,6 +24,7 @@ import AdminBanners from "./pages/AdminBanners";
 import AdminWithdrawals from "./pages/AdminWithdrawals";
 import MyWithdrawals from "./pages/MyWithdrawals";
 import PollDetail from "./pages/PollDetail";
+import OldPollRedirect from "./pages/OldPollRedirect";
 import Portfolio from "./pages/Portfolio";
 import MyMoney from "./pages/MyMoney";
 import MyPolls from "./pages/MyPolls";
@@ -81,8 +81,8 @@ const AppContent = () => {
         <Route path="/termos-de-uso" element={<TermosDeUso />} />
         <Route path="/seguranca" element={<Seguranca />} />
         <Route path="/meios-de-pagamento" element={<MeiosDePagamento />} />
-        <Route path="/poll/:slug" element={<PollDetail />} />
-        <Route path="/poll/:id" element={<RedirectPollById />} />
+        <Route path="/enquete/:slug" element={<PollDetail />} />
+        <Route path="/poll/:id" element={<OldPollRedirect />} />
         <Route path="/sitemap.xml" element={<Sitemap />} />
         
         {/* Protected routes that require authentication */}
