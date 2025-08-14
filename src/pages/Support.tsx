@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useTickets } from '@/hooks/useTickets';
 import { useTicketMessages } from '@/hooks/useTicketMessages';
@@ -8,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { MessageSquare, Send } from 'lucide-react';
 
@@ -107,6 +106,9 @@ export default function Support() {
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>Ticket</DialogTitle>
+            <DialogDescription className="sr-only">
+              Histórico e mensagens do ticket selecionado.
+            </DialogDescription>
           </DialogHeader>
 
           {!activeTicket && <div className="text-sm text-muted-foreground">Carregando...</div>}

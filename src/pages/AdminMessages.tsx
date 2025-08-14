@@ -1,4 +1,3 @@
-
 import { useEffect, useMemo, useState } from 'react';
 import { useTickets } from '@/hooks/useTickets';
 import { useTicketMessages } from '@/hooks/useTicketMessages';
@@ -6,7 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { useAdminCheck } from '@/hooks/useAdminCheck';
@@ -25,6 +24,7 @@ export default function AdminMessages() {
   const [reply, setReply] = useState('');
   const [usersMap, setUsersMap] = useState<Record<string, string>>({});
 
+  // Load display names for tickets' users
   useEffect(() => {
     const ids = Array.from(new Set(tickets.map(t => t.user_id)));
     if (ids.length === 0) return;
@@ -118,6 +118,9 @@ export default function AdminMessages() {
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>Mensagens do ticket</DialogTitle>
+            <DialogDescription className="sr-only">
+              Histórico de mensagens e campo de resposta para o ticket selecionado.
+            </DialogDescription>
           </DialogHeader>
 
           {!activeTicket && <div className="text-sm text-muted-foreground">Carregando...</div>}
