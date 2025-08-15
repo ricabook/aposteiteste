@@ -1,4 +1,3 @@
-
 import { useEffect, useMemo, useState } from 'react';
 import { Bell } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
@@ -12,7 +11,8 @@ import {
   DropdownMenuSeparator
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { Link, useNavigate } from 'react-router-dom';
+import { useToast } from '@/components/ui/use-toast';
+import { useNavigate } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
 
@@ -25,20 +25,25 @@ type Notification = {
   link: string | null;
   read: boolean;
   created_at: string;
+  // se sua coluna for ENUM:
+  // type: 'support:new_ticket' | 'support:admin_reply' | 'generic';
 };
 
 export default function NotificationsBell() {
   const { user } = useAuth();
   const { isAdmin } = useAdminCheck();
   const navigate = useNavigate();
+  const { toast } = useToast();
+
   const [items, setItems] = useState<Notification[]>([]);
+  const [loadingAll, setLoadingAll] = useState(false);
 
   const load = async () => {
     if (!user) return setItems([]);
-    const base = supabase.from('notifications').select('*').order('created_at', { ascending: false }).limit(20);
+    const base = supabase.from('notifications').select('*').order('created_at', { ascending: false }).limit(50);
     let query;
     if (isAdmin) {
-      // Admin sees admin-targeted + own user-targeted
+      // Admin enxerga broadcast para admin + pessoais dele
       query = base.or(`role_target.eq.admin,user_id.eq.${user.id}`);
     } else {
       query = base.eq('user_id', user.id);
@@ -57,9 +62,9 @@ export default function NotificationsBell() {
         { event: 'INSERT', schema: 'public', table: 'notifications' },
         (payload: any) => {
           const row = payload.new as Notification;
-          // Filter in client to avoid flashing irrelevant rows
+          // filtra o que interessa para este cliente
           if ((isAdmin && row.role_target === 'admin') || (row.user_id === user.id)) {
-            setItems(prev => [row, ...prev].slice(0, 20));
+            setItems(prev => [row, ...prev].slice(0, 50));
           }
         }
       )
@@ -81,6 +86,52 @@ export default function NotificationsBell() {
     if (n.link) navigate(n.link);
   };
 
+  const markAllAsRead = async () => {
+    if (!user) return;
+    try {
+      setLoadingAll(true);
+
+      if (isAdmin) {
+        // 1) broadcast para admins
+        const { error: e1 } = await supabase
+          .from('notifications')
+          .update({ read: true })
+          .eq('role_target', 'admin')
+          .eq('read', false);
+        if (e1) throw e1;
+
+        // 2) pessoais do admin
+        const { error: e2 } = await supabase
+          .from('notifications')
+          .update({ read: true })
+          .eq('user_id', user.id)
+          .eq('read', false);
+        if (e2) throw e2;
+      } else {
+        // usuário comum: apenas as suas
+        const { error } = await supabase
+          .from('notifications')
+          .update({ read: true })
+          .eq('user_id', user.id)
+          .eq('read', false);
+        if (error) throw error;
+      }
+
+      // Atualiza estado local
+      setItems(prev => prev.map(n => ({ ...n, read: true })));
+      toast({ title: 'Pronto', description: 'Todas as notificações foram marcadas como lidas.' });
+    } catch (err: any) {
+      console.error('Erro ao marcar todas como lidas:', err);
+      toast({
+        title: 'Erro',
+        description: err?.message ?? 'Não foi possível marcar todas como lidas.',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoadingAll(false);
+    }
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -94,9 +145,22 @@ export default function NotificationsBell() {
           <span className="sr-only">Notificações</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-80 max-h-[70vh] overflow-auto">
-        <div className="px-2 py-1.5 text-sm font-semibold">Notificações</div>
+
+      <DropdownMenuContent align="end" className="w-80 max-h-[70vh] overflow-auto p-0">
+        {/* Cabeçalho com "Marcar todas como lidas" */}
+        <div className="flex items-center justify-between px-3 py-2">
+          <div className="text-sm font-semibold">Notificações</div>
+          <Button
+            variant="link"
+            className="h-auto px-0 text-xs"
+            disabled={loadingAll || unreadCount === 0}
+            onClick={markAllAsRead}
+          >
+            {loadingAll ? 'Marcando…' : 'Marcar todas como lidas'}
+          </Button>
+        </div>
         <DropdownMenuSeparator />
+
         {items.length === 0 ? (
           <div className="px-3 py-6 text-sm text-muted-foreground">Sem notificações</div>
         ) : (
