@@ -1,3 +1,4 @@
+
 import { ReactNode, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -24,7 +25,7 @@ import ThemeToggle from '@/components/ThemeToggle';
 import Logo from '@/components/Logo';
 import SearchBar from '@/components/SearchBar';
 import Footer from '@/components/Footer';
-import { User, Settings, LogOut, Wallet, BarChart3, Shield, Menu, X, Banknote, Users } from 'lucide-react';
+import { User, Settings, LogOut, Wallet, BarChart3, Shield, Menu, X, Banknote, Users, MessageSquare } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
 interface LayoutProps {
@@ -43,8 +44,6 @@ const Layout = ({ children, onSearch }: LayoutProps) => {
 
   const handleSignOut = async () => {
     const { error } = await signOut();
-    // signOut já trata erros de sessão não encontrada internamente
-    // Só consideramos erro real se não for relacionado a sessão
     if (error && !error.message?.includes('session_not_found') && 
         !error.message?.includes('Session not found')) {
       toast({
@@ -76,13 +75,14 @@ const Layout = ({ children, onSearch }: LayoutProps) => {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* === Topbar (mantido sem alterações estruturais) === */}
       <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-16 items-center justify-between">
-        {/* Sino de notificações - mobile */}
-        <div className="flex items-center md:hidden">
-          <NotificationsBell />
-        </div>
-        
+          {/* Sino de notificações - mobile */}
+          <div className="flex items-center md:hidden">
+            <NotificationsBell />
+          </div>
+          
           <div className="flex items-center space-x-8">
             <Link 
               to="/" 
@@ -91,13 +91,10 @@ const Layout = ({ children, onSearch }: LayoutProps) => {
               <Logo />
             </Link>
             
-            
             <div className="hidden md:flex items-center space-x-6">
               <Link 
                 to="/" 
-                className={`text-sm font-medium transition-colors hover:text-primary ${
-                  isActive('/') ? 'text-primary' : 'text-muted-foreground'
-                }`}
+                className={`text-sm font-medium transition-colors hover:text-primary ${isActive('/') ? 'text-primary' : 'text-muted-foreground'}`}
               >
                 Mercados
               </Link>
@@ -105,82 +102,62 @@ const Layout = ({ children, onSearch }: LayoutProps) => {
                 <>
                   <Link 
                     to="/portfolio" 
-                    className={`text-sm font-medium transition-colors hover:text-primary ${
-                      isActive('/portfolio') ? 'text-primary' : 'text-muted-foreground'
-                    }`}
+                    className={`text-sm font-medium transition-colors hover:text-primary ${isActive('/portfolio') ? 'text-primary' : 'text-muted-foreground'}`}
                   >
                     Minhas apostas
                   </Link>
                   <Link 
                     to="/my-money" 
-                    className={`text-sm font-medium transition-colors hover:text-primary ${
-                      isActive('/my-money') ? 'text-primary' : 'text-muted-foreground'
-                    }`}
+                    className={`text-sm font-medium transition-colors hover:text-primary ${isActive('/my-money') ? 'text-primary' : 'text-muted-foreground'}`}
                   >
                     Meu dinheiro
                   </Link>
-                   {!isAdmin && (
-                     <Link 
-                       to="/my-polls" 
-                       className={`text-sm font-medium transition-colors hover:text-primary ${
-                         isActive('/my-polls') ? 'text-primary' : 'text-muted-foreground'
-                       }`}
-                     >
-                       Minhas Enquetes
-                     </Link>
-                   )}
+                  {!isAdmin && (
+                    <Link 
+                      to="/my-polls" 
+                      className={`text-sm font-medium transition-colors hover:text-primary ${isActive('/my-polls') ? 'text-primary' : 'text-muted-foreground'}`}
+                    >
+                      Minhas Enquetes
+                    </Link>
+                  )}
                   {isAdmin && (
                     <>
                       <Link 
                         to="/admin" 
-                        className={`text-sm font-medium transition-colors hover:text-primary ${
-                          isActive('/admin') || location.pathname.startsWith('/admin') 
-                            ? 'text-primary' 
-                            : 'text-muted-foreground'
-                        }`}
+                        className={`text-sm font-medium transition-colors hover:text-primary ${isActive('/admin') || location.pathname.startsWith('/admin') ? 'text-primary' : 'text-muted-foreground'}`}
                       >
                         Admin
                       </Link>
                       <Link 
                         to="/admin/polls" 
-                        className={`text-sm font-medium transition-colors hover:text-primary ${
-                          isActive('/admin/polls') ? 'text-primary' : 'text-muted-foreground'
-                        }`}
+                        className={`text-sm font-medium transition-colors hover:text-primary ${isActive('/admin/polls') ? 'text-primary' : 'text-muted-foreground'}`}
                       >
                         Enquetes
                       </Link>
-                       <Link 
-                         to="/admin/users" 
-                         className={`text-sm font-medium transition-colors hover:text-primary ${
-                           isActive('/admin/users') ? 'text-primary' : 'text-muted-foreground'
-                         }`}
-                       >
-                         Usuários
-                       </Link>
-                       <Link 
-                         to="/admin/wallet" 
-                         className={`text-sm font-medium transition-colors hover:text-primary ${
-                           isActive('/admin/wallet') ? 'text-primary' : 'text-muted-foreground'
-                         }`}
-                       >
-                         Wallet
-                       </Link>
-                        <Link 
-                          to="/admin/banners" 
-                          className={`text-sm font-medium transition-colors hover:text-primary ${
-                            isActive('/admin/banners') ? 'text-primary' : 'text-muted-foreground'
-                          }`}
-                        >
-                          Banners
-                        </Link>
-                        <Link 
-                          to="/admin/withdrawals" 
-                          className={`text-sm font-medium transition-colors hover:text-primary ${
-                            isActive('/admin/withdrawals') ? 'text-primary' : 'text-muted-foreground'
-                          }`}
-                        >
-                          Saques
-                        </Link>
+                      <Link 
+                        to="/admin/users" 
+                        className={`text-sm font-medium transition-colors hover:text-primary ${isActive('/admin/users') ? 'text-primary' : 'text-muted-foreground'}`}
+                      >
+                        Usuários
+                      </Link>
+                      <Link 
+                        to="/admin/wallet" 
+                        className={`text-sm font-medium transition-colors hover:text-primary ${isActive('/admin/wallet') ? 'text-primary' : 'text-muted-foreground'}`}
+                      >
+                        Wallet
+                      </Link>
+                      <Link 
+                        to="/admin/banners" 
+                        className={`text-sm font-medium transition-colors hover:text-primary ${isActive('/admin/banners') ? 'text-primary' : 'text-muted-foreground'}`}
+                      >
+                        Banners
+                      </Link>
+                      <Link 
+                        to="/admin/withdrawals" 
+                        className={`text-sm font-medium transition-colors hover:text-primary ${isActive('/admin/withdrawals') ? 'text-primary' : 'text-muted-foreground'}`}
+                      >
+                        Saques
+                      </Link>
                     </>
                   )}
                 </>
@@ -189,7 +166,6 @@ const Layout = ({ children, onSearch }: LayoutProps) => {
           </div>
 
           <div className="flex items-center space-x-2">
-            
             {/* Mobile Menu Button */}
             {isMobile && (
               <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
@@ -280,20 +256,36 @@ const Layout = ({ children, onSearch }: LayoutProps) => {
                               <span>Meu dinheiro</span>
                             </Link>
                             
-                             {!isAdmin && (
-                               <Link
-                                 to="/my-polls"
-                                 onClick={() => setIsMobileMenuOpen(false)}
-                                 className={`flex items-center space-x-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                                   isActive('/my-polls') 
-                                     ? 'bg-primary text-primary-foreground' 
-                                     : 'text-foreground hover:bg-muted'
-                                 }`}
-                               >
-                                 <BarChart3 className="h-5 w-5" />
-                                 <span>Minhas Enquetes</span>
-                               </Link>
-                             )}
+                            {!isAdmin && (
+                              <>
+                                <Link
+                                  to="/my-polls"
+                                  onClick={() => setIsMobileMenuOpen(false)}
+                                  className={`flex items-center space-x-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                                    isActive('/my-polls') 
+                                      ? 'bg-primary text-primary-foreground' 
+                                      : 'text-foreground hover:bg-muted'
+                                  }`}
+                                >
+                                  <BarChart3 className="h-5 w-5" />
+                                  <span>Minhas Enquetes</span>
+                                </Link>
+
+                                {/* NOVO: Suporte (mobile) - apenas usuário */}
+                                <Link
+                                  to="/suporte"
+                                  onClick={() => setIsMobileMenuOpen(false)}
+                                  className={`flex items-center space-x-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                                    isActive('/suporte') 
+                                      ? 'bg-primary text-primary-foreground' 
+                                      : 'text-foreground hover:bg-muted'
+                                  }`}
+                                >
+                                  <MessageSquare className="h-5 w-5" />
+                                  <span>Suporte</span>
+                                </Link>
+                              </>
+                            )}
                             
                             <Link
                               to="/settings"
@@ -341,57 +333,71 @@ const Layout = ({ children, onSearch }: LayoutProps) => {
                                   <span>Enquetes</span>
                                 </Link>
                                 
-                                 <Link
-                                   to="/admin/users"
-                                   onClick={() => setIsMobileMenuOpen(false)}
-                                   className={`flex items-center space-x-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                                     isActive('/admin/users') 
-                                       ? 'bg-primary text-primary-foreground' 
-                                       : 'text-foreground hover:bg-muted'
-                                   }`}
-                                 >
-                                   <Users className="h-5 w-5" />
-                                   <span>Usuários</span>
-                                 </Link>
+                                <Link
+                                  to="/admin/users"
+                                  onClick={() => setIsMobileMenuOpen(false)}
+                                  className={`flex items-center space-x-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                                    isActive('/admin/users') 
+                                      ? 'bg-primary text-primary-foreground' 
+                                      : 'text-foreground hover:bg-muted'
+                                  }`}
+                                >
+                                  <Users className="h-5 w-5" />
+                                  <span>Usuários</span>
+                                </Link>
                                 
-                                 <Link
-                                   to="/admin/wallet"
-                                   onClick={() => setIsMobileMenuOpen(false)}
-                                   className={`flex items-center space-x-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                                     isActive('/admin/wallet') 
-                                       ? 'bg-primary text-primary-foreground' 
-                                       : 'text-foreground hover:bg-muted'
-                                   }`}
-                                 >
-                                   <Wallet className="h-5 w-5" />
-                                   <span>Wallet</span>
-                                 </Link>
-                                 
-                                  <Link
-                                    to="/admin/banners"
-                                    onClick={() => setIsMobileMenuOpen(false)}
-                                    className={`flex items-center space-x-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                                      isActive('/admin/banners') 
-                                        ? 'bg-primary text-primary-foreground' 
-                                        : 'text-foreground hover:bg-muted'
-                                    }`}
-                                  >
-                                    <BarChart3 className="h-5 w-5" />
-                                    <span>Banners</span>
-                                  </Link>
-                                  
-                                  <Link
-                                    to="/admin/withdrawals"
-                                    onClick={() => setIsMobileMenuOpen(false)}
-                                    className={`flex items-center space-x-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                                      isActive('/admin/withdrawals') 
-                                        ? 'bg-primary text-primary-foreground' 
-                                        : 'text-foreground hover:bg-muted'
-                                    }`}
-                                  >
-                                    <Banknote className="h-5 w-5" />
-                                    <span>Saques</span>
-                                  </Link>
+                                <Link
+                                  to="/admin/wallet"
+                                  onClick={() => setIsMobileMenuOpen(false)}
+                                  className={`flex items-center space-x-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                                    isActive('/admin/wallet') 
+                                      ? 'bg-primary text-primary-foreground' 
+                                      : 'text-foreground hover:bg-muted'
+                                  }`}
+                                >
+                                  <Wallet className="h-5 w-5" />
+                                  <span>Wallet</span>
+                                </Link>
+                                
+                                <Link
+                                  to="/admin/banners"
+                                  onClick={() => setIsMobileMenuOpen(false)}
+                                  className={`flex items-center space-x-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                                    isActive('/admin/banners') 
+                                      ? 'bg-primary text-primary-foreground' 
+                                      : 'text-foreground hover:bg-muted'
+                                  }`}
+                                >
+                                  <BarChart3 className="h-5 w-5" />
+                                  <span>Banners</span>
+                                </Link>
+                                
+                                <Link
+                                  to="/admin/withdrawals"
+                                  onClick={() => setIsMobileMenuOpen(false)}
+                                  className={`flex items-center space-x-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                                    isActive('/admin/withdrawals') 
+                                      ? 'bg-primary text-primary-foreground' 
+                                      : 'text-foreground hover:bg-muted'
+                                  }`}
+                                >
+                                  <Banknote className="h-5 w-5" />
+                                  <span>Saques</span>
+                                </Link>
+
+                                {/* NOVO: Mensagens (mobile) - apenas admin */}
+                                <Link
+                                  to="/admin/mensagens"
+                                  onClick={() => setIsMobileMenuOpen(false)}
+                                  className={`flex items-center space-x-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                                    isActive('/admin/mensagens') 
+                                      ? 'bg-primary text-primary-foreground' 
+                                      : 'text-foreground hover:bg-muted'
+                                  }`}
+                                >
+                                  <MessageSquare className="h-5 w-5" />
+                                  <span>Mensagens</span>
+                                </Link>
                               </>
                             )}
                           </>
@@ -448,7 +454,6 @@ const Layout = ({ children, onSearch }: LayoutProps) => {
                     
                     <NotificationsBell />
 
-                    
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" className="relative h-9 w-9 rounded-full">
@@ -493,23 +498,44 @@ const Layout = ({ children, onSearch }: LayoutProps) => {
                             <span>Configurações</span>
                           </Link>
                         </DropdownMenuItem>
-                         {isAdmin && (
-                           <>
-                             <DropdownMenuSeparator />
-                             <DropdownMenuItem asChild>
-                               <Link to="/admin" className="flex items-center">
-                                 <Shield className="mr-2 h-4 w-4" />
-                                 <span>Painel Admin</span>
-                               </Link>
-                             </DropdownMenuItem>
-                             <DropdownMenuItem asChild>
-                               <Link to="/admin/wallet" className="flex items-center">
-                                 <Wallet className="mr-2 h-4 w-4" />
-                                 <span>Wallet</span>
-                               </Link>
-                             </DropdownMenuItem>
-                           </>
-                         )}
+
+                        {/* NOVOS ITENS DO DROPDOWN (desktop) */}
+                        {!isAdmin && (
+                          <DropdownMenuItem asChild>
+                            <Link to="/suporte" className="flex items-center">
+                              <MessageSquare className="mr-2 h-4 w-4" />
+                              <span>Suporte</span>
+                            </Link>
+                          </DropdownMenuItem>
+                        )}
+
+                        {isAdmin && (
+                          <DropdownMenuItem asChild>
+                            <Link to="/admin/mensagens" className="flex items-center">
+                              <MessageSquare className="mr-2 h-4 w-4" />
+                              <span>Mensagens</span>
+                            </Link>
+                          </DropdownMenuItem>
+                        )}
+                        {/* FIM DOS ITENS NOVOS */}
+
+                        {isAdmin && (
+                          <>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem asChild>
+                              <Link to="/admin" className="flex items-center">
+                                <Shield className="mr-2 h-4 w-4" />
+                                <span>Painel Admin</span>
+                              </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem asChild>
+                              <Link to="/admin/wallet" className="flex items-center">
+                                <Wallet className="mr-2 h-4 w-4" />
+                                <span>Wallet</span>
+                              </Link>
+                            </DropdownMenuItem>
+                          </>
+                        )}
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={handleSignOut}>
                           <LogOut className="mr-2 h-4 w-4" />
