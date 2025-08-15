@@ -114,85 +114,109 @@ export default function AdminMensagens() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-6 max-w-6xl">
-      <div className="grid md:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Tickets</CardTitle>
+    <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-6 max-w-7xl">
+      <div className="flex flex-col lg:grid lg:grid-cols-2 gap-4 sm:gap-6">
+        <Card className="order-2 lg:order-1">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg sm:text-xl">Tickets</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2">
+          <CardContent className="space-y-2 max-h-[60vh] lg:max-h-[70vh] overflow-y-auto">
             {(tickets || []).map((t) => (
               <button
                 key={t.id}
                 onClick={() => setSelected(t)}
-                className={`w-full text-left p-3 rounded-lg border hover:bg-muted/50 transition flex items-center justify-between ${selected?.id===t.id?'bg-muted/50':''}`}
+                className={`w-full text-left p-3 rounded-lg border hover:bg-muted/50 transition flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 ${selected?.id===t.id?'bg-muted/50 ring-2 ring-primary/20':''}`}
               >
-                <div>
-                  <div className="font-medium">{t.titulo}</div>
+                <div className="flex-1 min-w-0">
+                  <div className="font-medium truncate">{t.titulo}</div>
                   <div className="text-xs text-muted-foreground">Criado em {formattedDate(t.created_at)}</div>
                 </div>
-                <div className="text-right text-xs text-muted-foreground">
-                  {t.nome || '—'}<br/>{t.email || '—'}
+                <div className="text-left sm:text-right text-xs text-muted-foreground shrink-0">
+                  <div className="truncate">{t.nome || '—'}</div>
+                  <div className="truncate">{t.email || '—'}</div>
                 </div>
               </button>
             ))}
             {(tickets || []).length === 0 && (
-              <div className="text-sm text-muted-foreground">Nenhum ticket encontrado.</div>
+              <div className="text-sm text-muted-foreground text-center py-8">Nenhum ticket encontrado.</div>
             )}
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Detalhes</CardTitle>
+        <Card className="order-1 lg:order-2">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg sm:text-xl">Detalhes</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             {!selected ? (
-              <div className="text-sm text-muted-foreground">Selecione um ticket para visualizar.</div>
+              <div className="text-sm text-muted-foreground text-center py-8">Selecione um ticket para visualizar.</div>
             ) : (
               <>
-                <div className="rounded-lg border p-4">
-                  <div className="flex items-center justify-between mb-1">
-                    <div className="font-medium">{selected.titulo}</div>
-                    <Badge>{selected.status}</Badge>
+                <div className="rounded-lg border p-3 sm:p-4">
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-2">
+                    <div className="font-medium break-words pr-2">{selected.titulo}</div>
+                    <Badge className="self-start">{selected.status}</Badge>
                   </div>
-                  <div className="text-xs text-muted-foreground mb-2">
-                    Aberto em {formattedDate(selected.created_at)}<br />
-                    Autor: {selected.nome || '—'} ({selected.email || '—'})
+                  <div className="text-xs text-muted-foreground mb-3 space-y-1">
+                    <div>Aberto em {formattedDate(selected.created_at)}</div>
+                    <div>Autor: {selected.nome || '—'} ({selected.email || '—'})</div>
                   </div>
-                  <div className="whitespace-pre-wrap">{selected.assunto}</div>
+                  <div className="whitespace-pre-wrap text-sm break-words">{selected.assunto}</div>
                 </div>
 
-                <div className="space-y-3">
+                <div className="space-y-3 max-h-[40vh] lg:max-h-[50vh] overflow-y-auto">
                   {(messages || []).map((m) => (
-                    <div key={m.id} className="rounded-lg border p-3">
-                      <div className="text-xs text-muted-foreground mb-1">
+                    <div key={m.id} className={`rounded-lg border p-3 ${m.sender_role === 'admin' ? 'bg-primary/5' : 'bg-muted/30'}`}>
+                      <div className="text-xs text-muted-foreground mb-2">
                         {m.sender_role === 'admin' ? 'Admin' : 'Usuário'} • {formattedDate(m.created_at)}
                       </div>
-                      <div className="whitespace-pre-wrap">{m.message}</div>
+                      <div className="whitespace-pre-wrap text-sm break-words">{m.message}</div>
                     </div>
                   ))}
                 </div>
 
                 {selected.status === 'Aberto' && (
-                  <div className="space-y-2">
-                    <Textarea placeholder="Escreva sua resposta ao usuário..." value={reply} onChange={(e)=>setReply(e.target.value)} className="min-h-[120px]" />
-                    <div className="flex gap-2">
-                      <Button onClick={()=>sendReply.mutate()} disabled={!reply.trim() || sendReply.isPending}>
-                        <Send className="w-4 h-4 mr-2" /> Enviar resposta
+                  <div className="space-y-3 pt-2 border-t">
+                    <Textarea 
+                      placeholder="Escreva sua resposta ao usuário..." 
+                      value={reply} 
+                      onChange={(e)=>setReply(e.target.value)} 
+                      className="min-h-[100px] resize-none" 
+                    />
+                    <div className="flex flex-col sm:flex-row gap-2">
+                      <Button 
+                        onClick={()=>sendReply.mutate()} 
+                        disabled={!reply.trim() || sendReply.isPending}
+                        className="flex-1 sm:flex-none"
+                      >
+                        <Send className="w-4 h-4 mr-2" /> 
+                        <span className="hidden sm:inline">Enviar resposta</span>
+                        <span className="sm:hidden">Enviar</span>
                       </Button>
-                      <Button variant="secondary" onClick={()=>resolveTicket.mutate(selected.id)}>
-                        <CheckCircle2 className="w-4 h-4 mr-2" /> Resolver
+                      <Button 
+                        variant="secondary" 
+                        onClick={()=>resolveTicket.mutate(selected.id)}
+                        className="flex-1 sm:flex-none"
+                      >
+                        <CheckCircle2 className="w-4 h-4 mr-2" /> 
+                        <span className="hidden sm:inline">Resolver</span>
+                        <span className="sm:hidden">Resolver</span>
                       </Button>
-                      <Button variant="destructive" onClick={()=>deleteTicket.mutate(selected.id)}>
-                        <Trash2 className="w-4 h-4 mr-2" /> Apagar
+                      <Button 
+                        variant="destructive" 
+                        onClick={()=>deleteTicket.mutate(selected.id)}
+                        className="flex-1 sm:flex-none"
+                      >
+                        <Trash2 className="w-4 h-4 mr-2" /> 
+                        <span className="hidden sm:inline">Apagar</span>
+                        <span className="sm:hidden">Apagar</span>
                       </Button>
                     </div>
                   </div>
                 )}
 
                 {selected.status === 'Resolvido' && (
-                  <div className="text-sm text-muted-foreground">
+                  <div className="text-sm text-muted-foreground text-center py-4 bg-muted/30 rounded-lg">
                     Ticket encerrado. Não é possível enviar novas respostas.
                   </div>
                 )}
