@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAdminCheck } from '@/hooks/useAdminCheck';
@@ -20,6 +20,8 @@ interface Ticket {
   status: TicketStatus;
   created_at: string;
   updated_at: string;
+  nome?: string | null;
+  email?: string | null;
 }
 
 interface Message {
@@ -28,11 +30,6 @@ interface Message {
   sender_role: 'admin' | 'user';
   message: string;
   created_at: string;
-}
-
-interface AuthorInfo {
-  name: string | null;
-  email: string | null;
 }
 
 export default function AdminMensagens() {
@@ -68,32 +65,6 @@ export default function AdminMensagens() {
     },
     enabled: isAdmin && !isLoading && !!selected?.id,
   });
-
-  // Load author via secure RPC (server-side, SECURITY DEFINER)
-  const [author, setAuthor] = useState<AuthorInfo | null>(null);
-  useEffect(() => {
-    const load = async () => {
-      if (!isAdmin || !selected?.user_id) {
-        setAuthor(null);
-        return;
-      }
-      const { data, error } = await supabase.rpc('admin_get_user_identity', {
-        uid: selected.user_id,
-      });
-      if (error) {
-        console.error('Erro ao buscar autor:', error);
-        setAuthor({ name: null, email: null });
-        return;
-      }
-      // data is array of rows when returns setof/table; we expect single row
-      const row = Array.isArray(data) ? data[0] : data;
-      setAuthor({
-        name: (row && (row.full_name || row.name)) ?? null,
-        email: (row && row.email) ?? null,
-      });
-    };
-    load();
-  }, [isAdmin, selected?.user_id]);
 
   const deleteTicket = useMutation({
     mutationFn: async (ticketId: string) => {
@@ -160,7 +131,9 @@ export default function AdminMensagens() {
                   <div className="font-medium">{t.titulo}</div>
                   <div className="text-xs text-muted-foreground">Criado em {formattedDate(t.created_at)}</div>
                 </div>
-                <Badge variant={t.status === 'Aberto' ? 'default' : 'secondary'}>{t.status}</Badge>
+                <div className="text-right text-xs text-muted-foreground">
+                  {t.nome || '—'}<br/>{t.email || '—'}
+                </div>
               </button>
             ))}
             {(tickets || []).length === 0 && (
@@ -185,7 +158,7 @@ export default function AdminMensagens() {
                   </div>
                   <div className="text-xs text-muted-foreground mb-2">
                     Aberto em {formattedDate(selected.created_at)}<br />
-                    Autor: {author?.name || 'Nome não informado'} ({author?.email || 'email indisponível'})
+                    Autor: {selected.nome || '—'} ({selected.email || '—'})
                   </div>
                   <div className="whitespace-pre-wrap">{selected.assunto}</div>
                 </div>

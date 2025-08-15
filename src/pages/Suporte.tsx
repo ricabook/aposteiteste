@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -21,6 +21,8 @@ interface Ticket {
   status: TicketStatus;
   created_at: string;
   updated_at: string;
+  nome?: string | null;
+  email?: string | null;
 }
 
 interface Message {
@@ -36,6 +38,8 @@ export default function Suporte() {
   const qc = useQueryClient();
   const [titulo, setTitulo] = useState('');
   const [assunto, setAssunto] = useState('');
+  const [nome, setNome] = useState('');
+  const [email, setEmail] = useState('');
   const [activeTicket, setActiveTicket] = useState<Ticket | null>(null);
 
   const { data: tickets, isLoading } = useQuery({
@@ -69,18 +73,27 @@ export default function Suporte() {
 
   const createTicket = useMutation({
     mutationFn: async () => {
-      const { data, error } = await supabase.from('support_tickets').insert({
+      const payload = {
         titulo,
         assunto,
-        status: 'Aberto',
+        status: 'Aberto' as TicketStatus,
         user_id: user!.id,
-      }).select('*').single();
+        nome: nome?.trim() || null,
+        email: email?.trim() || null,
+      };
+      const { data, error } = await supabase
+        .from('support_tickets')
+        .insert(payload)
+        .select('*')
+        .single();
       if (error) throw error;
       return data as Ticket;
     },
     onSuccess: (t) => {
       setTitulo('');
       setAssunto('');
+      setNome('');
+      setEmail('');
       qc.invalidateQueries({ queryKey: ['support_tickets', user?.id] });
       setActiveTicket(t);
     }
@@ -90,6 +103,8 @@ export default function Suporte() {
     if (!d) return '';
     return format(new Date(d), "dd 'de' MMM 'às' HH:mm", { locale: ptBR });
   };
+
+  const formValid = titulo.trim() && assunto.trim();
 
   return (
     <div className="container mx-auto px-4 py-6 max-w-5xl">
@@ -108,9 +123,17 @@ export default function Suporte() {
                 <label className="text-sm font-medium">Assunto</label>
                 <Textarea value={assunto} onChange={(e) => setAssunto(e.target.value)} placeholder="Descreva o problema brevemente" className="min-h-[120px]" />
               </div>
+              <div>
+                <label className="text-sm font-medium">Nome</label>
+                <Input value={nome} onChange={(e) => setNome(e.target.value)} placeholder="Seu nome" />
+              </div>
+              <div>
+                <label className="text-sm font-medium">E-mail</label>
+                <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="seuemail@exemplo.com" />
+              </div>
             </div>
             <div className="flex justify-end">
-              <Button onClick={() => createTicket.mutate()} disabled={!titulo || !assunto || createTicket.isPending}>
+              <Button onClick={() => createTicket.mutate()} disabled={!formValid || createTicket.isPending}>
                 <Send className="w-4 h-4 mr-2" />
                 Enviar
               </Button>
@@ -172,7 +195,9 @@ export default function Suporte() {
                 >
                   <div>
                     <div className="font-medium">{t.titulo}</div>
-                    <div className="text-xs text-muted-foreground">Criado em {formattedDate(t.created_at)}</div>
+                    <div className="text-xs text-muted-foreground">
+                      Criado em {formattedDate(t.created_at)} {t.nome ? `• ${t.nome}` : ''}
+                    </div>
                   </div>
                   <Badge variant={t.status === 'Aberto' ? 'default' : 'secondary'}>{t.status}</Badge>
                 </button>
